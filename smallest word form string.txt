@@ -1,0 +1,36 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_WORDS 100
+#define MAX_LENGTH 100
+
+char words[MAX_WORDS][MAX_LENGTH];
+int word_count = 0;
+
+void find_smallest_word() {
+    if (word_count == 0) return;
+
+    char smallest[MAX_LENGTH];
+    strcpy(smallest, words[0]);
+
+    for (int i = 1; i < word_count; i++) {
+        if (strlen(words[i]) < strlen(smallest)) {
+            strcpy(smallest, words[i]);
+        }
+    }
+
+    printf("Smallest word: %s\n", smallest);
+}
+%}
+
+%%
+[a-zA-Z]+  { strcpy(words[word_count++], yytext); }
+[\n]+      { find_smallest_word(); word_count = 0; }
+%%
+
+int main() {
+    printf("Enter a string: ");
+    yylex();
+    return 0;
+}

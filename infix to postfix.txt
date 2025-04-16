@@ -1,0 +1,63 @@
+%{
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+char stack[MAX];
+int top = -1;
+
+// Function to push an element to the stack
+void push(char c) {
+    stack[++top] = c;
+}
+
+// Function to pop an element from the stack
+char pop() {
+    return stack[top--];
+}
+
+// Function to check precedence of operators
+int precedence(char c) {
+    if (c == '+' || c == '-') {
+        return 1;
+    } else if (c == '*' || c == '/') {
+        return 2;
+    }
+    return 0;
+}
+%}
+
+%%
+[0-9]+   { printf("%s ", yytext); } // Print operand
+[+\-*/()] {
+              char token = yytext[0];
+              if (token == '(') {
+                  push(token);
+              } else if (token == ')') {
+                  while (stack[top] != '(') {
+                      printf("%c ", pop());
+                  }
+                  pop(); // Remove '(' from the stack
+              } else {
+                  while (top != -1 && precedence(stack[top]) >= precedence(token)) {
+                      printf("%c ", pop());
+                  }
+                  push(token);
+              }
+          }
+\n       {
+              while (top != -1) {
+                  printf("%c ", pop());
+              }
+              printf("\n");
+          }
+.        { printf("Invalid character encountered: %s\n", yytext); }
+%%
+
+int main() {
+    printf("Enter an infix expression: ");
+    yylex();
+    return 0;
+}

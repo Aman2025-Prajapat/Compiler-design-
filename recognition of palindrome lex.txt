@@ -1,0 +1,13 @@
+%{
+#include "y.tab.h"
+%}
+
+%%
+[a-z]  { return yytext[0]; }
+\n     { return '\n'; }
+.      ;  // ignore other characters
+%%
+
+int yywrap() {
+    return 1;
+}
